@@ -1,6 +1,6 @@
 import type { PlayerWithStats } from "@/lib/types";
 import type { BestValues } from "@/lib/tableHelpers";
-import { daysSinceLastGame, formatPct, formatStat, formatStatLg } from "@/lib/format";
+import { daysSince, daysSinceLastGame, formatPct, formatStat, formatStatLg } from "@/lib/format";
 import { lgCls, seasonCls } from "@/lib/tableHelpers";
 
 type Props = {
@@ -28,9 +28,10 @@ function statCell(
 export default function PlayerRow({ player, isEven, best }: Props) {
   const { name, team, lastGame, lastGameInfo, lastGameStats, lastFive, stats } = player;
   const rowClass = isEven ? "bg-white" : "bg-gray-50";
+  const inactive = daysSince(lastGame) > 7;
 
   return (
-    <tr className={`${rowClass} hover:bg-blue-50 transition-colors`}>
+    <tr className={`${rowClass} hover:bg-blue-50 transition-colors${inactive ? " opacity-40" : ""}`}>
       <td className={`px-4 py-3 font-medium text-gray-900 sticky left-0 ${rowClass}`}>
         <div className="flex items-center gap-2">
           <img

@@ -1,5 +1,12 @@
 const GMT10_OFFSET_MS = 10 * 60 * 60 * 1000;
 
+export function daysSince(isoDate: string | null): number {
+  if (!isoDate) return Infinity;
+  const nowDay = Math.floor((Date.now() + GMT10_OFFSET_MS) / 86_400_000);
+  const gameDay = Math.floor((new Date(isoDate).getTime() + GMT10_OFFSET_MS) / 86_400_000);
+  return nowDay - gameDay;
+}
+
 export function daysSinceLastGame(isoDate: string | null): string {
   if (!isoDate) return "—";
   const nowDay = Math.floor((Date.now() + GMT10_OFFSET_MS) / 86_400_000);
