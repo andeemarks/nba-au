@@ -6,10 +6,12 @@ function makePlayer(overrides: Partial<PlayerWithStats> & { id: number; name: st
     id: overrides.id,
     name: overrides.name,
     team: overrides.team ?? "TST",
-    position: overrides.position ?? "G",
+    lastGame: overrides.lastGame ?? null,
+    lastGameInfo: overrides.lastGameInfo ?? null,
+    lastGameStats: overrides.lastGameStats ?? null,
+    lastFive: overrides.lastFive ?? [],
     stats: {
-      gamesPlayed: 50,
-      min: 30,
+      min: overrides.stats?.min ?? 30,
       pts: overrides.stats?.pts ?? 10,
       reb: overrides.stats?.reb ?? 5,
       ast: overrides.stats?.ast ?? 3,
@@ -61,6 +63,35 @@ describe("sortPlayers", () => {
 
     const ascSorted = sortPlayers(withNull, "pts", "asc");
     expect(ascSorted[ascSorted.length - 1].id).toBe(4);
+  });
+
+  it("sorts by lastGame date descending", () => {
+    const withDates = [
+      makePlayer({ id: 1, name: "Patty Mills", lastGame: "2026-03-20" }),
+      makePlayer({ id: 2, name: "Ben Simmons", lastGame: "2026-03-22" }),
+      makePlayer({ id: 3, name: "Joe Ingles", lastGame: "2026-03-18" }),
+    ];
+    const sorted = sortPlayers(withDates, "lastGame", "desc");
+    expect(sorted.map((p) => p.id)).toEqual([2, 1, 3]);
+  });
+
+  it("sorts by lastGame date ascending", () => {
+    const withDates = [
+      makePlayer({ id: 1, name: "Patty Mills", lastGame: "2026-03-20" }),
+      makePlayer({ id: 2, name: "Ben Simmons", lastGame: "2026-03-22" }),
+      makePlayer({ id: 3, name: "Joe Ingles", lastGame: "2026-03-18" }),
+    ];
+    const sorted = sortPlayers(withDates, "lastGame", "asc");
+    expect(sorted.map((p) => p.id)).toEqual([3, 1, 2]);
+  });
+
+  it("treats two null values as equal", () => {
+    const withNulls = [
+      makePlayer({ id: 1, name: "Patty Mills", lastGame: null }),
+      makePlayer({ id: 2, name: "Ben Simmons", lastGame: null }),
+    ];
+    const sorted = sortPlayers(withNulls, "lastGame", "desc");
+    expect(sorted.map((p) => p.id)).toEqual([1, 2]);
   });
 
   it("does not mutate the original array", () => {
