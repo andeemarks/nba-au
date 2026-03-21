@@ -86,7 +86,7 @@ export default function PlayerRow({ player, isEven, best }: Props) {
       </td>
       <td className="px-4 py-3 font-mono">
         <div className="flex gap-0.5">
-          {lastFive.length === 0 ? <span className="text-gray-400">—</span> : lastFive.map((won, i) => (
+          {lastFive.length === 0 ? <span className="text-gray-400">—</span> : [...lastFive].reverse().map((won, i) => (
             <span
               key={i}
               className={`text-xs font-bold ${won === null ? "text-gray-400" : won ? "text-emerald-600" : "text-red-500"}`}
