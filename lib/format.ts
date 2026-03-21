@@ -9,9 +9,7 @@ export function daysSince(isoDate: string | null): number {
 
 export function daysSinceLastGame(isoDate: string | null): string {
   if (!isoDate) return "—";
-  const nowDay = Math.floor((Date.now() + GMT10_OFFSET_MS) / 86_400_000);
-  const gameDay = Math.floor((new Date(isoDate).getTime() + GMT10_OFFSET_MS) / 86_400_000);
-  const days = nowDay - gameDay;
+  const days = daysSince(isoDate);
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
   return `${days} days ago`;

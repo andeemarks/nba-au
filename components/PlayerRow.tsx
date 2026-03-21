@@ -15,7 +15,7 @@ function statCell(
   lg: number | null, season: number | null,
   bestLg: number | null, bestSeason: number | null,
   fmtLg: (v: number | null) => string,
-  fmtSeason: (v: number | null) => string,
+  fmtSeason: (v: number | null) => string = fmtLg,
 ) {
   return (
     <>
@@ -75,15 +75,15 @@ export default function PlayerRow({ player, isEven, best }: Props) {
       </td>
       <td className={BASE_TD}>
         {statCell(lastGameStats?.fgPct ?? null, stats.fgPct,
-          best.lastGame.fgPct, best.season.fgPct, formatPct, formatPct)}
+          best.lastGame.fgPct, best.season.fgPct, formatPct)}
       </td>
       <td className={BASE_TD}>
         {statCell(lastGameStats?.fg3Pct ?? null, stats.fg3Pct,
-          best.lastGame.fg3Pct, best.season.fg3Pct, formatPct, formatPct)}
+          best.lastGame.fg3Pct, best.season.fg3Pct, formatPct)}
       </td>
       <td className={BASE_TD}>
         {statCell(lastGameStats?.ftPct ?? null, stats.ftPct,
-          best.lastGame.ftPct, best.season.ftPct, formatPct, formatPct)}
+          best.lastGame.ftPct, best.season.ftPct, formatPct)}
       </td>
       <td className="px-4 py-3 font-mono">
         <div className="flex gap-0.5">
