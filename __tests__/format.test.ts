@@ -1,10 +1,5 @@
-import {
-  daysSinceLastGame,
-  formatPct,
-  formatStat,
-  lgCls,
-  seasonCls,
-} from "@/components/PlayerRow";
+import { daysSinceLastGame, formatPct, formatStat } from "@/lib/format";
+import { lgCls, seasonCls } from "@/lib/tableHelpers";
 
 // Fix "now" to 2026-03-22T12:00:00 AEST (= 2026-03-22T02:00:00Z)
 const FIXED_NOW = new Date("2026-03-22T02:00:00Z").getTime();

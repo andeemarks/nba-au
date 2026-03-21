@@ -1,6 +1,7 @@
 "use client";
 
-import type { PlayerWithStats, PlayerStats, SortColumn, SortState } from "@/lib/types";
+import type { PlayerWithStats, SortColumn, SortState } from "@/lib/types";
+import { computeBest } from "@/lib/tableHelpers";
 import TableHeader from "./TableHeader";
 import PlayerRow from "./PlayerRow";
 
@@ -9,23 +10,6 @@ type Props = {
   sortState: SortState;
   onSort: (column: SortColumn) => void;
 };
-
-const STAT_KEYS = ["min", "pts", "reb", "ast", "stl", "blk", "fgPct", "fg3Pct", "ftPct"] as const;
-
-type StatBests = { [K in keyof PlayerStats]: number | null };
-export type BestValues = { season: StatBests; lastGame: StatBests };
-
-export function computeBest(players: PlayerWithStats[]): BestValues {
-  function maxPerKey(getter: (p: PlayerWithStats) => PlayerStats | null): StatBests {
-    return Object.fromEntries(
-      STAT_KEYS.map((k) => {
-        const vals = players.map((p) => getter(p)?.[k] ?? null).filter((v): v is number => v !== null);
-        return [k, vals.length ? Math.max(...vals) : null];
-      })
-    ) as StatBests;
-  }
-  return { season: maxPerKey((p) => p.stats), lastGame: maxPerKey((p) => p.lastGameStats) };
-}
 
 export default function PlayerTable({ players, sortState, onSort }: Props) {
   const best = computeBest(players);

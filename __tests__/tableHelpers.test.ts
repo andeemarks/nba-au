@@ -1,4 +1,4 @@
-import { computeBest } from "@/components/PlayerTable";
+import { computeBest } from "@/lib/tableHelpers";
 import type { PlayerWithStats } from "@/lib/types";
 
 function makePlayer(id: number, stats: Partial<PlayerWithStats["stats"]>, lastGameStats: Partial<PlayerWithStats["stats"]> | null = null): PlayerWithStats {
