@@ -6,14 +6,16 @@ const MOCK_PLAYERS = [
     name: "Patty Mills",
     team: "BKN",
     position: "G",
-    stats: { gamesPlayed: 60, min: 28.5, pts: 11.2, reb: 2.1, ast: 3.4, stl: 1.1, blk: 0.2, fgPct: 0.432, fg3Pct: 0.388, ftPct: 0.891 },
+    stats: { gamesPlayed: 60, min: 28.5, pts: 11.2, reb: 2.1, ast: 3.4, stl: 1.1, blk: 0.2, fgPct: 0.432, fg3Pct: 0.388,
+      ftPct: 0.891 },
   },
   {
     id: 2,
     name: "Joe Ingles",
     team: "MIL",
     position: "F",
-    stats: { gamesPlayed: 55, min: 22.0, pts: 9.0, reb: 3.5, ast: 4.2, stl: 0.9, blk: 0.1, fgPct: 0.41, fg3Pct: 0.37, ftPct: 0.85 },
+    stats: { gamesPlayed: 55, min: 22.0, pts: 9.0, reb: 3.5, ast: 4.2, stl: 0.9, blk: 0.1, fgPct: 0.41, fg3Pct: 0.37,
+      ftPct: 0.85 },
   },
 ];
 

@@ -1,7 +1,11 @@
 import { computeBest } from "@/lib/tableHelpers";
 import type { PlayerWithStats } from "@/lib/types";
 
-function makePlayer(id: number, stats: Partial<PlayerWithStats["stats"]>, lastGameStats: Partial<PlayerWithStats["stats"]> | null = null): PlayerWithStats {
+function makePlayer(
+  id: number,
+  stats: Partial<PlayerWithStats["stats"]>,
+  lastGameStats: Partial<PlayerWithStats["stats"]> | null = null,
+): PlayerWithStats {
   const fullStats: PlayerWithStats["stats"] = {
     min: null, pts: null, reb: null, ast: null,
     stl: null, blk: null, fgPct: null, fg3Pct: null, ftPct: null,
@@ -13,7 +17,10 @@ function makePlayer(id: number, stats: Partial<PlayerWithStats["stats"]>, lastGa
     team: "TST",
     lastGame: null,
     lastGameInfo: null,
-    lastGameStats: lastGameStats ? { min: null, pts: null, reb: null, ast: null, stl: null, blk: null, fgPct: null, fg3Pct: null, ftPct: null, ...lastGameStats } : null,
+    lastGameStats: lastGameStats
+      ? { min: null, pts: null, reb: null, ast: null, stl: null, blk: null,
+          fgPct: null, fg3Pct: null, ftPct: null, ...lastGameStats }
+      : null,
     lastFive: [],
     stats: fullStats,
   };

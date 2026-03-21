@@ -17,9 +17,12 @@ export default function LoadingState() {
         <tbody className="divide-y divide-gray-100">
           {Array.from({ length: SKELETON_ROWS }).map((_, row) => (
             <tr key={row} className={row % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-              {Array.from({ length: SKELETON_COLS }).map((_, col) => (
+              {Array.from({ length: SKELETON_COLS }).map((_cell, col) => (
                 <td key={col} className="px-4 py-3">
-                  <div className="h-4 rounded bg-gray-200 animate-pulse" style={{ width: col === 0 ? "120px" : "40px" }} />
+                  <div
+                    className="h-4 rounded bg-gray-200 animate-pulse"
+                    style={{ width: col === 0 ? "120px" : "40px" }}
+                  />
                 </td>
               ))}
             </tr>
