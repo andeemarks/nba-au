@@ -10,6 +10,7 @@ The app displays a sortable table of Australian players showing:
 - **Season averages** displayed beneath each last game stat
 - **Last 5 games** W/L form, oldest to most recent (left to right)
 - Best values per column highlighted in green (last game) and amber (season)
+- Players who haven't played in over 7 days are visually dimmed
 
 Data is fetched by a Node.js script that calls ESPN's API and is cached server-side for 5 minutes.
 
@@ -38,7 +39,7 @@ npm test
 # Unit tests with coverage
 npm test -- --coverage
 
-# End-to-end tests (requires a running dev server)
+# End-to-end tests (Playwright starts the dev server automatically)
 npm run test:e2e
 ```
 
