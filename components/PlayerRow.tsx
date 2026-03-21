@@ -55,8 +55,14 @@ export default function PlayerRow({ player, isEven, best }: Props) {
   return (
     <tr className={`${rowClass} hover:bg-blue-50 transition-colors`}>
       <td className={`px-4 py-3 font-medium text-gray-900 sticky left-0 ${rowClass}`}>
-        <div>{name}</div>
-        <div className="text-xs text-gray-500">{team}</div>
+        <div className="flex items-center gap-2">
+          <img
+            src={`https://a.espncdn.com/i/teamlogos/nba/500/${team.toLowerCase()}.png`}
+            alt={team}
+            className="h-5 w-5 shrink-0"
+          />
+          <span>{name}</span>
+        </div>
       </td>
       <td className="px-4 py-3 font-mono text-gray-700 whitespace-nowrap">
         {lastGameInfo ? (
