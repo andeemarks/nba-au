@@ -1,6 +1,6 @@
 import type { PlayerWithStats } from "@/lib/types";
 import type { BestValues } from "@/lib/tableHelpers";
-import { daysSinceLastGame, formatPct, formatStat } from "@/lib/format";
+import { daysSinceLastGame, formatPct, formatStat, formatStatLg } from "@/lib/format";
 import { lgCls, seasonCls } from "@/lib/tableHelpers";
 
 type Props = {
@@ -14,12 +14,13 @@ const BASE_TD = "px-4 py-3 text-right font-mono";
 function statCell(
   lg: number | null, season: number | null,
   bestLg: number | null, bestSeason: number | null,
-  fmt: (v: number | null) => string,
+  fmtLg: (v: number | null) => string,
+  fmtSeason: (v: number | null) => string,
 ) {
   return (
     <>
-      <div className={lgCls(lg, bestLg)}>{fmt(lg)}</div>
-      <div className={seasonCls(season, bestSeason)}>{fmt(season)}</div>
+      <div className={lgCls(lg, bestLg)}>{fmtLg(lg)}</div>
+      <div className={seasonCls(season, bestSeason)}>{fmtSeason(season)}</div>
     </>
   );
 }
@@ -54,31 +55,34 @@ export default function PlayerRow({ player, isEven, best }: Props) {
         ) : "—"}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.min ?? null, stats.min, null, null, formatStat)}
+        {statCell(lastGameStats?.min ?? null, stats.min, null, null, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.pts ?? null, stats.pts, best.lastGame.pts, best.season.pts, formatStat)}
+        {statCell(lastGameStats?.pts ?? null, stats.pts, best.lastGame.pts, best.season.pts, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.reb ?? null, stats.reb, best.lastGame.reb, best.season.reb, formatStat)}
+        {statCell(lastGameStats?.reb ?? null, stats.reb, best.lastGame.reb, best.season.reb, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.ast ?? null, stats.ast, best.lastGame.ast, best.season.ast, formatStat)}
+        {statCell(lastGameStats?.ast ?? null, stats.ast, best.lastGame.ast, best.season.ast, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.stl ?? null, stats.stl, best.lastGame.stl, best.season.stl, formatStat)}
+        {statCell(lastGameStats?.stl ?? null, stats.stl, best.lastGame.stl, best.season.stl, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.blk ?? null, stats.blk, best.lastGame.blk, best.season.blk, formatStat)}
+        {statCell(lastGameStats?.blk ?? null, stats.blk, best.lastGame.blk, best.season.blk, formatStatLg, formatStat)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.fgPct ?? null, stats.fgPct, best.lastGame.fgPct, best.season.fgPct, formatPct)}
+        {statCell(lastGameStats?.fgPct ?? null, stats.fgPct,
+          best.lastGame.fgPct, best.season.fgPct, formatPct, formatPct)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.fg3Pct ?? null, stats.fg3Pct, best.lastGame.fg3Pct, best.season.fg3Pct, formatPct)}
+        {statCell(lastGameStats?.fg3Pct ?? null, stats.fg3Pct,
+          best.lastGame.fg3Pct, best.season.fg3Pct, formatPct, formatPct)}
       </td>
       <td className={BASE_TD}>
-        {statCell(lastGameStats?.ftPct ?? null, stats.ftPct, best.lastGame.ftPct, best.season.ftPct, formatPct)}
+        {statCell(lastGameStats?.ftPct ?? null, stats.ftPct,
+          best.lastGame.ftPct, best.season.ftPct, formatPct, formatPct)}
       </td>
       <td className="px-4 py-3 font-mono">
         <div className="flex gap-0.5">
