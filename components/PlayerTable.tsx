@@ -15,7 +15,7 @@ const STAT_KEYS = ["min", "pts", "reb", "ast", "stl", "blk", "fgPct", "fg3Pct", 
 type StatBests = { [K in keyof PlayerStats]: number | null };
 export type BestValues = { season: StatBests; lastGame: StatBests };
 
-function computeBest(players: PlayerWithStats[]): BestValues {
+export function computeBest(players: PlayerWithStats[]): BestValues {
   function maxPerKey(getter: (p: PlayerWithStats) => PlayerStats | null): StatBests {
     return Object.fromEntries(
       STAT_KEYS.map((k) => {

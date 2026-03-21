@@ -9,7 +9,7 @@ type Props = {
 
 const GMT10_OFFSET_MS = 10 * 60 * 60 * 1000;
 
-function daysSinceLastGame(isoDate: string | null): string {
+export function daysSinceLastGame(isoDate: string | null): string {
   if (!isoDate) return "—";
   const nowDay = Math.floor((Date.now() + GMT10_OFFSET_MS) / 86_400_000);
   const gameDay = Math.floor((new Date(isoDate).getTime() + GMT10_OFFSET_MS) / 86_400_000);
@@ -19,23 +19,23 @@ function daysSinceLastGame(isoDate: string | null): string {
   return `${days} days ago`;
 }
 
-function formatPct(value: number | null): string {
+export function formatPct(value: number | null): string {
   if (value === null) return "—";
   return `${(value * 100).toFixed(1)}%`;
 }
 
-function formatStat(value: number | null): string {
+export function formatStat(value: number | null): string {
   if (value === null) return "—";
   return value.toFixed(1);
 }
 
 const BASE_TD = "px-4 py-3 text-right font-mono";
 
-function lgCls(v: number | null, best: number | null) {
+export function lgCls(v: number | null, best: number | null) {
   return v !== null && v === best ? "text-emerald-500 font-semibold" : "text-gray-700";
 }
 
-function seasonCls(v: number | null, best: number | null) {
+export function seasonCls(v: number | null, best: number | null) {
   return `text-xs ${v !== null && v === best ? "text-amber-500 font-semibold" : "text-gray-400"}`;
 }
 
