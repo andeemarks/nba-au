@@ -47,7 +47,8 @@ export default function PlayerRow({ player, isEven, best }: Props) {
           <>
             <div className="flex items-center gap-1.5">
               {lastGameInfo.completed ? (
-                <span className={`text-xs font-bold ${lastGameInfo.playerTeamWon ? "text-emerald-600" : "text-red-500"}`}>
+                <span className={`text-xs font-bold ${lastGameInfo.playerTeamWon
+                  ? "text-emerald-600" : "text-red-500"}`}>
                   {lastGameInfo.playerTeamWon ? "W" : "L"}
                 </span>
               ) : (
