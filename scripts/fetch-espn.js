@@ -73,6 +73,7 @@ function parseSummary(summary, playerTeamId) {
     playerTeamScore: parseInt(playerTeam?.score ?? "0", 10),
     opponentScore: parseInt(opponent?.score ?? "0", 10),
     playerTeamWon: playerTeam?.winner === true,
+    completed: comp.status?.type?.completed === true,
   };
 }
 
@@ -87,7 +88,7 @@ async function fetchGameSummary(event, teamId) {
   return { info: parseSummary(summary, teamId), stats: gameStats };
 }
 
-async function fetchRecentGames(athleteId, count = 5) {
+async function fetchRecentGames(athleteId, count = 6) {
   const log = await get(
     `https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/athletes/${athleteId}/eventlog?limit=100&season=${espnSeason}`
   );
@@ -120,7 +121,7 @@ function buildPlayer(player, stats, recentGames) {
     lastGame: lastGame?.info?.date ?? null,
     lastGameInfo: lastGame?.info ?? null,
     lastGameStats: lastGame?.stats ? parseGameStats(lastGame.stats) : null,
-    lastFive: (recentGames ?? []).map((g) => g?.info?.playerTeamWon ?? null),
+    lastFive: (recentGames ?? []).filter((g) => g?.info?.completed).slice(0, 5).map((g) => g.info.playerTeamWon),
     stats: {
       min: getStat(stats, "avgMinutes"),
       pts: getStat(stats, "avgPoints"),

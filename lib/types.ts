@@ -16,6 +16,7 @@ export type LastGameInfo = {
   playerTeamScore: number;
   opponentScore: number;
   playerTeamWon: boolean;
+  completed: boolean;
 };
 
 export type Player = {
