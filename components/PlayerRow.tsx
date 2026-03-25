@@ -1,7 +1,7 @@
 import type { PlayerWithStats } from "@/lib/types";
 import type { BestValues } from "@/lib/tableHelpers";
 import { daysSince, daysSinceLastGame, formatPct, formatStat, formatStatLg } from "@/lib/format";
-import { lgCls, seasonCls } from "@/lib/tableHelpers";
+import { lgCls } from "@/lib/tableHelpers";
 
 type Props = {
   player: PlayerWithStats;
@@ -17,11 +17,28 @@ function statCell(
   fmtLg: (v: number | null) => string,
   fmtSeason: (v: number | null) => string = fmtLg,
 ) {
+  const isSeasonBest = season !== null && season === bestSeason;
+  const trend = lg !== null && season !== null
+    ? lg > season ? "up" : lg < season ? "down" : null
+    : null;
   return (
-    <>
-      <div className={lgCls(lg, bestLg)}>{fmtLg(lg)}</div>
-      <div className={seasonCls(season, bestSeason)}>{fmtSeason(season)}</div>
-    </>
+    <div className="relative group/stat">
+      <div className="flex items-center justify-end gap-0.5">
+        <span className={lgCls(lg, bestLg)}>{fmtLg(lg)}</span>
+        {trend === "up" && <span className="text-emerald-500 text-base leading-none">↑</span>}
+        {trend === "down" && <span className="text-red-400 text-base leading-none">↓</span>}
+      </div>
+      {season !== null && (
+        <div className={`
+          absolute bottom-full right-0 mb-1 px-2 py-1 rounded
+          bg-gray-800 text-white text-xs whitespace-nowrap z-30
+          opacity-0 group-hover/stat:opacity-100 pointer-events-none
+          transition-opacity duration-150
+        `}>
+          Season avg: <span className={isSeasonBest ? "text-amber-400 font-semibold" : ""}>{fmtSeason(season)}</span>
+        </div>
+      )}
+    </div>
   );
 }
 
