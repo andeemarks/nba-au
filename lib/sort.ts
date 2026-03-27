@@ -3,7 +3,7 @@ import type { PlayerWithStats, SortColumn, SortDirection } from "./types";
 function getValue(player: PlayerWithStats, column: SortColumn): number | string | null {
   if (column === "name") return player.name;
   if (column === "lastGame") return player.lastGame;
-  return player.stats[column];
+  return player.lastGameStats?.[column] ?? null;
 }
 
 export function sortPlayers(

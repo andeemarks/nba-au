@@ -25,10 +25,14 @@ function makePlayer(overrides: Partial<PlayerWithStats> & { id: number; name: st
   };
 }
 
+const mkStats = (pts: number): PlayerWithStats["lastGameStats"] => ({
+  min: 30, pts, reb: 5, ast: 3, stl: 1, blk: 0.5, fgPct: 0.45, fg3Pct: 0.35, ftPct: 0.8,
+});
+
 const players: PlayerWithStats[] = [
-  makePlayer({ id: 1, name: "Patty Mills", stats: { pts: 11.2 } as PlayerWithStats["stats"] }),
-  makePlayer({ id: 2, name: "Ben Simmons", stats: { pts: 6.5 } as PlayerWithStats["stats"] }),
-  makePlayer({ id: 3, name: "Joe Ingles", stats: { pts: 9.0 } as PlayerWithStats["stats"] }),
+  makePlayer({ id: 1, name: "Patty Mills", lastGameStats: mkStats(11.2) }),
+  makePlayer({ id: 2, name: "Ben Simmons", lastGameStats: mkStats(6.5) }),
+  makePlayer({ id: 3, name: "Joe Ingles", lastGameStats: mkStats(9.0) }),
 ];
 
 describe("sortPlayers", () => {
@@ -55,7 +59,7 @@ describe("sortPlayers", () => {
 
   it("places null stats at the end regardless of direction", () => {
     const withNull = [
-      makePlayer({ id: 4, name: "Null Player", stats: { pts: null } as unknown as PlayerWithStats["stats"] }),
+      makePlayer({ id: 4, name: "Null Player", lastGameStats: null }),
       ...players,
     ];
     const descSorted = sortPlayers(withNull, "pts", "desc");
