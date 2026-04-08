@@ -1,68 +1,103 @@
-import { execFile } from "child_process";
 import { fetchAustralianPlayers } from "@/lib/nbaApi";
 
-jest.mock("child_process");
-const mockExecFile = execFile as jest.MockedFunction<typeof execFile>;
+const MOCK_TEAMS = {
+  sports: [{ leagues: [{ teams: [{ team: { id: "1", abbreviation: "ATL" } }] }] }],
+};
 
-function mockScript(output: object) {
-  mockExecFile.mockImplementationOnce((_cmd, _args, _opts, cb: any) => {
-    cb(null, JSON.stringify(output), "");
-    return {} as any;
-  });
-}
+const MOCK_ROSTER = {
+  athletes: [{ id: "4869342", firstName: "Dyson", lastName: "Daniels" }],
+};
 
-function makePlayer(overrides: Record<string, unknown> = {}) {
-  return {
-    id: 1,
-    name: "Patty Mills",
-    team: "BOS",
-    lastGame: "2026-03-19T10:00Z",
-    lastGameInfo: null,
-    lastGameStats: null,
-    lastFive: [],
-    stats: {
-      min: 28.5,
-      pts: 11.2,
-      reb: 2.1,
-      ast: 3.4,
-      stl: 0.9,
-      blk: 0.2,
-      fgPct: 0.423,
-      fg3Pct: 0.382,
-      ftPct: 0.857,
-    },
+const MOCK_STATS = {
+  splits: {
+    categories: [{
+      stats: [
+        { name: "avgPoints", value: 12.5 },
+        { name: "avgRebounds", value: 3.2 },
+        { name: "avgAssists", value: 4.1 },
+        { name: "avgSteals", value: 1.1 },
+        { name: "avgBlocks", value: 0.3 },
+        { name: "avgMinutes", value: 29.0 },
+        { name: "fieldGoalPct", value: 45.2 },
+        { name: "threePointPct", value: 38.1 },
+        { name: "freeThrowPct", value: 82.0 },
+      ],
+    }],
+  },
+};
+
+const MOCK_EVENTLOG = { events: { items: [] } };
+
+type FetchHandlers = Record<string, object | null>;
+
+function mockFetch(overrides: FetchHandlers = {}) {
+  const handlers: FetchHandlers = {
+    "/nba/teams": MOCK_TEAMS,
+    "/teams/1/roster": MOCK_ROSTER,
+    "/statistics/0": MOCK_STATS,
+    "/eventlog": MOCK_EVENTLOG,
     ...overrides,
   };
+
+  global.fetch = jest.fn((url: string) => {
+    const sorted = Object.entries(handlers).sort((a, b) => b[0].length - a[0].length);
+    for (const [pattern, body] of sorted) {
+      if (url.includes(pattern)) {
+        if (body === null) {
+          return Promise.resolve({ ok: false, status: 500, json: async () => ({}) } as Response);
+        }
+        return Promise.resolve({ ok: true, json: async () => body } as Response);
+      }
+    }
+    return Promise.resolve({ ok: false, status: 404, json: async () => ({}) } as Response);
+  }) as jest.Mock;
+}
+
+// Use unique seasons per test to avoid hitting the module-level in-memory cache
+let seasonYear = 1990;
+function nextSeason() {
+  const y = seasonYear++;
+  return `${y}-${String(y + 1).slice(-2)}`;
 }
 
 beforeEach(() => jest.clearAllMocks());
 
 describe("fetchAustralianPlayers", () => {
-  it("returns parsed player data from script output", async () => {
-    mockScript([makePlayer()]);
-    const result = await fetchAustralianPlayers("2024-25");
+  it("returns parsed player data from ESPN", async () => {
+    mockFetch();
+    const result = await fetchAustralianPlayers(nextSeason());
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("Patty Mills");
-    expect(result[0].stats.pts).toBe(11.2);
+    expect(result[0].name).toBe("Dyson Daniels");
+    expect(result[0].team).toBe("ATL");
+    expect(result[0].stats.pts).toBe(12.5);
+    expect(result[0].lastFive).toEqual([]);
   });
 
-  it("returns empty array when script outputs []", async () => {
-    mockScript([]);
-    const result = await fetchAustralianPlayers("2023-24");
+  it("returns empty array when no Australians on any roster", async () => {
+    mockFetch({ "/teams/1/roster": { athletes: [] } });
+    const result = await fetchAustralianPlayers(nextSeason());
     expect(result).toEqual([]);
   });
 
-  it("passes null stats through as null", async () => {
-    mockScript([makePlayer({ stats: { ...makePlayer().stats, fg3Pct: null } })]);
-    const result = await fetchAustralianPlayers("2022-23");
-    expect(result[0].stats.fg3Pct).toBeNull();
+  it("returns null stats when statistics endpoint fails", async () => {
+    mockFetch({ "/statistics/0": null });
+    const result = await fetchAustralianPlayers(nextSeason());
+    expect(result[0].stats.pts).toBeNull();
   });
 
-  it("throws when script exits with error", async () => {
-    mockExecFile.mockImplementationOnce((_cmd, _args, _opts, cb: any) => {
-      cb(new Error("failed"), "", "ESPN 500: internal error");
-      return {} as any;
-    });
-    await expect(fetchAustralianPlayers("2021-22")).rejects.toThrow("ESPN 500");
+  it("throws when ESPN teams endpoint returns an error", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({ ok: false, status: 500, json: async () => ({}) } as Response)
+    ) as jest.Mock;
+    await expect(fetchAustralianPlayers(nextSeason())).rejects.toThrow("ESPN 500");
+  });
+
+  it("returns cached data on repeated calls with the same season", async () => {
+    mockFetch();
+    const season = nextSeason();
+    await fetchAustralianPlayers(season);
+    const callCount = (global.fetch as jest.Mock).mock.calls.length;
+    await fetchAustralianPlayers(season);
+    expect((global.fetch as jest.Mock).mock.calls.length).toBe(callCount);
   });
 });
