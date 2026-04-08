@@ -55,11 +55,10 @@ function parseSummary(summary: any, playerTeamId: string): LastGameInfo | null {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function fetchGameSummary(event: any, teamId: string): Promise<{ info: LastGameInfo | null; stats: any } | null> {
-  const eventId = event.event?.["$ref"]?.match(/\/events\/(\d+)/)?.[1];
+async function fetchGameSummary(event: any, teamId: string): Promise<GameResult | null> {
+  const eventId = event.event?.$ref?.match(/\/events\/(\d+)/)?.[1];
   if (!eventId) return null;
-  const statsRef = event.statistics?.["$ref"];
+  const statsRef = event.statistics?.$ref;
   const [summary, gameStats] = await Promise.all([
     espnGet(`https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${eventId}`),
     statsRef ? espnGet(statsRef).catch(() => null) : Promise.resolve(null),
@@ -67,7 +66,10 @@ async function fetchGameSummary(event: any, teamId: string): Promise<{ info: Las
   return { info: parseSummary(summary, teamId), stats: gameStats };
 }
 
-async function fetchRecentGames(athleteId: string, espnSeason: number, count = 5): Promise<{ info: LastGameInfo | null; stats: any }[]> {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GameResult = { info: LastGameInfo | null; stats: any };
+
+async function fetchRecentGames(athleteId: string, espnSeason: number, count = 5): Promise<GameResult[]> {
   const log = await espnGet(
     `https://sports.core.api.espn.com/v2/sports/basketball/leagues/nba/athletes/${athleteId}/eventlog?limit=100&season=${espnSeason}`
   );
@@ -76,7 +78,7 @@ async function fetchRecentGames(athleteId: string, espnSeason: number, count = 5
   const played = [...items].reverse().filter((e: any) => e.played === true).slice(0, count + 1);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const results = await Promise.all(played.map((e: any) => fetchGameSummary(e, e.teamId).catch(() => null)));
-  return results.filter((r): r is { info: LastGameInfo | null; stats: any } => r !== null);
+  return results.filter((r): r is GameResult => r !== null);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,8 +96,7 @@ function parseGameStats(data: any): PlayerStats {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildPlayer(player: any, stats: any, recentGames: { info: LastGameInfo | null; stats: any }[]): PlayerWithStats {
+function buildPlayer(player: any, stats: any, recentGames: GameResult[]): PlayerWithStats {
   const completedGames = recentGames.filter((g) => g?.info?.completed === true);
   const lastGame = recentGames[0] ?? null;
   return {
